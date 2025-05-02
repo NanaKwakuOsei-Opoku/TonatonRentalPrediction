@@ -17,9 +17,8 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 
-# -----------------------------------------------------------------------------
 # 1) APP CONFIG
-# -----------------------------------------------------------------------------
+
 st.set_page_config(
     page_title="Ghana Rental Dashboard",
     layout="wide",
@@ -29,9 +28,9 @@ st.set_page_config(
 DATA_PATH  = "house_rentals.csv"
 MODEL_PATH = "ensemble_model.pkl"
 
-# -----------------------------------------------------------------------------
+
 # 2) DATA LOADING & PREPROCESSING
-# -----------------------------------------------------------------------------
+
 @st.cache_data(show_spinner=False)
 def load_data():
     df = pd.read_csv(DATA_PATH).rename(columns=str.strip)
@@ -57,9 +56,9 @@ df = load_data()
 ALL_AMENITIES  = sorted({a.strip() for s in df["amenities"].fillna("") for a in s.split(",") if a.strip()})
 ALL_LOCALITIES = sorted(df["locality"].dropna().unique())
 
-# -----------------------------------------------------------------------------
+
 # 3) FEATURE ENGINEERING
-# -----------------------------------------------------------------------------
+
 class FeatureEngineer(BaseEstimator, TransformerMixin):
     def __init__(self):
         self.enc = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
@@ -83,9 +82,9 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         ]]
         return pd.concat([num, cat_df], axis=1)
 
-# -----------------------------------------------------------------------------
+
 # 4) MODEL TRAINING / LOADING
-# -----------------------------------------------------------------------------
+
 @st.cache_data(show_spinner=False)
 def train_model(df):
     X = df.drop(columns=["price","log_price","amenities"], errors="ignore")
@@ -122,9 +121,8 @@ def get_model(df):
 
 model = get_model(df)
 
-# -----------------------------------------------------------------------------
 # 5) STREAMLIT UI
-# -----------------------------------------------------------------------------
+
 def main():
     st.markdown("## 🏘️ Ghana Rental Price Predictor")
 
@@ -189,7 +187,7 @@ def main():
         pred = st.session_state["pred"]
         left, right = st.columns([1,2])
 
-        # ─── price card ─────────────────────────────────────────
+        # price card 
         with left:
             st.markdown(f"""
                 <div style="
@@ -206,7 +204,7 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
 
-        # ─── heatmap + **clean legend** ─────────────────────────
+        # heatmap + **clean legend** 
         with right:
             st.markdown(
                 """
